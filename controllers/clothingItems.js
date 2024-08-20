@@ -1,5 +1,5 @@
-const ClothingItem = require("../models/clothingItem.js");
-const Error = require("../utils/errors.js");
+const ClothingItem = require("../models/clothingItem");
+const Error = require("../utils/errors");
 
 const createItem = (req, res) =>{
 
@@ -37,7 +37,7 @@ const getItems = (req, res) =>{
 
 const updateItem = (req, res) =>{
     const {itemId} = req.params;
-    const {imageURL} = req.body;
+    const {imageUrl} = req.body;
 
     ClothingItem.findByIdAndUpdate(itemId, {$set: {imageUrl}}).orFail().then((item) => {
         res.status(200).send({data: item});
@@ -49,16 +49,15 @@ const updateItem = (req, res) =>{
 const deleteItem = (req, res) =>{
     const {itemId} = req.params;
 
-    ClothingItem.findByIdAndDelete(itemId).orFail().then((item) => {
-        res.status(200).send({});
-    }).catch((e) =>{
+    ClothingItem.findByIdAndDelete(itemId).orFail().then((item) => res.send(item))
+    .catch((e) =>{
         if (e.name === "DocumentNotFoundError") {
             return res.status(Error.ERRORS.NOT_FOUND).send({ message: "Document not found" });
           }
           if (e.name === "CastError") {
             return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"})
           }
-        res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from deleteItem", e})
+        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from deleteItem", e})
     })
 }
 
@@ -81,7 +80,7 @@ const likeItem = (req, res) =>  {
           .send({ message: "Cast Error" });
     }
     else{
-        res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from likeItem", e})
+        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from likeItem", e})
     }
    
 })
@@ -101,7 +100,7 @@ const likeItem = (req, res) =>  {
       if (e.name === "CastError") {
         return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"})
       }
-    res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from dislikeItem", e})
+    return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from dislikeItem", e})
 })
 }
 
