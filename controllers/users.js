@@ -33,14 +33,14 @@ const getUser = (req, res) =>{
     .catch((err) => {
         console.error(err)
         if (err.name === "DocumentNotFoundError"){
-            return res.status(Error.ERRORS.NOT_FOUND).send({message: err.message})
-        } else if (err.name === "CastError"){
-            return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
-        }else{
-            return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: err.message})
-
+            return res.status(Error.ERRORS.NOT_FOUND).send({message: err.message});
+        } 
+        if (err.name === "CastError"){
+            return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message});
         }
-        
+           
+      return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: err.message});
+
     });
 
 }

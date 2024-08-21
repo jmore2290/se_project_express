@@ -57,7 +57,7 @@ const deleteItem = (req, res) =>{
           if (e.name === "CastError") {
             return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"})
           }
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from deleteItem", e})
+        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from deleteItem", e});
     })
 }
 
@@ -74,14 +74,13 @@ const likeItem = (req, res) =>  {
                .status(Error.ERRORS.NOT_FOUND)
                .send({ message: "Validation Error" });
     }
-    else if (e.name ==="CastError"){
+   if (e.name ==="CastError"){
         return res
                 .status(Error.ERRORS.INVALID_DATA)
                 .send({ message: "Cast Error" });
     }
-    else{
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from likeItem", e})
-    }
+    
+     return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from likeItem", e});
    
 })
 }
@@ -98,9 +97,9 @@ const likeItem = (req, res) =>  {
         return res.status(Error.ERRORS.NOT_FOUND).send({ message: "Document not found" });
       }
       if (e.name === "CastError") {
-        return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"})
+        return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"});
       }
-    return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from dislikeItem", e})
+    return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from dislikeItem", e});
 })
 }
 
