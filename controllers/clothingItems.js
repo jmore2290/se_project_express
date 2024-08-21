@@ -70,14 +70,14 @@ const likeItem = (req, res) =>  {
     res.status(200).send({data: item});
 }).catch((e) =>{
     if (e.name === "DocumentNotFoundError") {
-        res
-          .status(Error.ERRORS.NOT_FOUND)
-          .send({ message: "Validation Error" });
+        return res
+               .status(Error.ERRORS.NOT_FOUND)
+               .send({ message: "Validation Error" });
     }
     else if (e.name ==="CastError"){
-        res
-          .status(Error.ERRORS.INVALID_DATA)
-          .send({ message: "Cast Error" });
+        return res
+                .status(Error.ERRORS.INVALID_DATA)
+                .send({ message: "Cast Error" });
     }
     else{
         return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from likeItem", e})
@@ -92,7 +92,7 @@ const likeItem = (req, res) =>  {
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true },
   ).orFail().then((item) => {
-    res.status(200).send({});
+    res.status(200).send({data: item});
 }).catch((e) =>{
     if (e.name === "DocumentNotFoundError") {
         return res.status(Error.ERRORS.NOT_FOUND).send({ message: "Document not found" });

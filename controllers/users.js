@@ -36,8 +36,11 @@ const getUser = (req, res) =>{
             return res.status(Error.ERRORS.NOT_FOUND).send({message: err.message})
         } else if (err.name === "CastError"){
             return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
+        }else{
+            return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: err.message})
+
         }
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: err.message})
+        
     });
 
 }
