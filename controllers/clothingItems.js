@@ -30,7 +30,7 @@ const getItems = (req, res) =>{
 
     ClothingItem.find({}).then((items) => {
         res.status(200).send(items);
-    }).catch((e) =>{
+    }).catch(() =>{
         res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
     })
 }
