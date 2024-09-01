@@ -20,7 +20,7 @@ const createUser = (req, res) =>{
         if (err.name === "ValidationError"){
             return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
         }
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: err.message})
+        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
     });
 }
 
@@ -39,7 +39,7 @@ const getUser = (req, res) =>{
             return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message});
         }
            
-      return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: err.message});
+      return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"});
 
     });
 

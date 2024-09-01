@@ -12,15 +12,15 @@ const createItem = (req, res) =>{
         if (e.name === "ValidationError") {
             res
               .status(Error.ERRORS.INVALID_DATA)
-              .send({ message: "Validation Error" });
+              .send({ message: "Invalid data" });
         }
         else if (e.name === "TypeError"){
             res
             .status(Error.ERRORS.INVALID_DATA)
-            .send({ message: e.message });
+            .send({ message: "Invalid data" });
         }
         else{
-          res.status(Error.ERRORS.DEFAULT_ERROR).send({message: 'Error from createItem', e});
+          res.status(Error.ERRORS.DEFAULT_ERROR).send({message: 'An error has occurred on the server'});
           console.log(e.name);
     }
     });
@@ -31,18 +31,7 @@ const getItems = (req, res) =>{
     ClothingItem.find({}).then((items) => {
         res.status(200).send(items);
     }).catch((e) =>{
-        res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from getItems", e})
-    })
-}
-
-const updateItem = (req, res) =>{
-    const {itemId} = req.params;
-    const {imageUrl} = req.body;
-
-    ClothingItem.findByIdAndUpdate(itemId, {$set: {imageUrl}}).orFail().then((item) => {
-        res.status(200).send({data: item});
-    }).catch((e) =>{
-        res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from updateItem", e})
+        res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
     })
 }
 
@@ -57,7 +46,7 @@ const deleteItem = (req, res) =>{
           if (e.name === "CastError") {
             return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"})
           }
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from deleteItem", e});
+        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"});
     })
 }
 
@@ -72,15 +61,15 @@ const likeItem = (req, res) =>  {
     if (e.name === "DocumentNotFoundError") {
         return res
                .status(Error.ERRORS.NOT_FOUND)
-               .send({ message: "Validation Error" });
+               .send({ message: "Document not found" });
     }
    if (e.name ==="CastError"){
         return res
                 .status(Error.ERRORS.INVALID_DATA)
-                .send({ message: "Cast Error" });
+                .send({ message: "Invalid data" });
     }
     
-     return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from likeItem", e});
+     return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"});
    
 })
 }
@@ -99,8 +88,8 @@ const likeItem = (req, res) =>  {
       if (e.name === "CastError") {
         return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"});
       }
-    return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Error from dislikeItem", e});
+    return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"});
 })
 }
 
-module.exports = {createItem, getItems, updateItem, deleteItem, likeItem, dislikeItem};
+module.exports = {createItem, getItems, deleteItem, likeItem, dislikeItem};
