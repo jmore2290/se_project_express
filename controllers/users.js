@@ -1,6 +1,6 @@
-const Error = require("../utils/errors");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Error = require("../utils/errors");
 const JWT_SECRET = require("../utils/config");
 const User = require("../models/user");
 
@@ -15,26 +15,39 @@ const getUsers = (req, res) => {
 
 const createUser = (req, res) =>{
     const {name, avatar, email, password} = req.body;
-    console.log("I'm here too");
-    User.findOne({email}).then((user) => {
-        if(user){
-            return res.status(Error.ERRORS.CONFLICT_ERROR).send({message: "Email already exists in database"})
-        }
-        return null;
-    });
+    
+    User.findOne({ email })
+    .then((userExists) => {
+      if (userExists) {
+        console.log(userExists);
+        console.log(email);
+        return res.status(Error.ERRORS.CONFLICT_ERROR).send({message: "Email already exists in database"});
+      }
 
-    bcrypt.hash(password, 10).
-    then(hash => User.create({name, avatar, email, password: hash}))
-    .then((user) => {
-        res.status(201).send({name, avatar, email, _id: user._id})
+      return bcrypt.hash(password, 10).then((hash) => {
+        User.create({ name, avatar, email, password: hash }).then((user) => {
+          const userData = user.toObject();
+          delete userData.password;
+          return res.status(201).send({ user: userData });
+        })
+        .catch((err) => {
+            if (err.name === "ValidationError") {
+                return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
+              } else {
+                return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
+              }
+        });
+      });
     })
     .catch((err) => {
-        console.error(err)
-        if (err.name === "ValidationError"){
-            return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
-        }
+      if (err.name === "ValidationError") {
+        return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
+      } else {
         return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
+      }
     });
+   
+
 }
 
 const loginUser = (req, res) =>{

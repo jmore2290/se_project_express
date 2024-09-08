@@ -37,11 +37,10 @@ const getItems = (req, res) =>{
 
 const deleteItem = (req, res) =>{
     const {itemId} = req.params;
-    console.log("I'm here three");
     ClothingItem.findByIdAndDelete(itemId).orFail().then((item) =>{
       if(item.owner !== req.user._id){
         console.log("I' here");
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Unauthorized item deletion"});
+        return res.status(Error.ERRORS.FORBIDDEN_ERROR).send({message: "Unauthorized item deletion"});
       }
          return res.send(item);
     })
