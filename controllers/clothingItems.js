@@ -37,8 +37,14 @@ const getItems = (req, res) =>{
 
 const deleteItem = (req, res) =>{
     const {itemId} = req.params;
-
-    ClothingItem.findByIdAndDelete(itemId).orFail().then((item) => res.send(item))
+    console.log("I'm here three");
+    ClothingItem.findByIdAndDelete(itemId).orFail().then((item) =>{
+      if(item.owner !== req.user._id){
+        console.log("I' here");
+        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Unauthorized item deletion"});
+      }
+      res.send(item);
+    })
     .catch((e) =>{
         if (e.name === "DocumentNotFoundError") {
             return res.status(Error.ERRORS.NOT_FOUND).send({ message: "Document not found" });
