@@ -43,7 +43,7 @@ const deleteItem = (req, res) =>{
         console.log("I' here");
         return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "Unauthorized item deletion"});
       }
-      res.send(item);
+         return res.send(item);
     })
     .catch((e) =>{
         if (e.name === "DocumentNotFoundError") {
