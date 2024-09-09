@@ -36,23 +36,28 @@ const getItems = (req, res) =>{
 }
 
 const deleteItem = (req, res) =>{
-    const {itemId} = req.params;
-    ClothingItem.findByIdAndDelete(itemId).orFail().then((item) =>{
-      if(item.owner !== req.user._id){
-        console.log("I' here");
-        return res.status(Error.ERRORS.FORBIDDEN_ERROR).send({message: "Unauthorized item deletion"});
-      }
-         return res.send(item);
-    })
-    .catch((e) =>{
-        if (e.name === "DocumentNotFoundError") {
-            return res.status(Error.ERRORS.NOT_FOUND).send({ message: "Document not found" });
-          }
-          if (e.name === "CastError") {
-            return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"})
-          }
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"});
-    })
+  ClothingItem.findById(req.params.itemId)
+  .then((item) => {
+    if (String(item.owner) !== req.user._id) {
+      console.log("I' here");
+      return res.status(Error.ERRORS.FORBIDDEN_ERROR).send({message: "Unauthorized item deletion"});
+    }
+    if (!item) {
+      return res.status(Error.ERRORS.NOT_FOUND).send({message: "Item Not Found"});
+    }
+
+    return item
+      .deleteOne()
+      .then(() => res.send({ message: "Item deleted." }));
+  })
+  .catch((e) =>{
+    if (e.name === "CastError") {
+      return res.status(Error.ERRORS.INVALID_DATA).send({message: "Invalid data"})
+    }
+  return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"});
+})
+
+
 }
 
 const likeItem = (req, res) =>  {

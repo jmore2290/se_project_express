@@ -33,18 +33,17 @@ const createUser = (req, res) =>{
         .catch((err) => {
             if (err.name === "ValidationError") {
                 return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
-              } else {
-                return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
-              }
+              } 
+            return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
+              
         });
       });
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
-      } else {
+      } 
         return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
-      }
     });
    
 
