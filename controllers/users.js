@@ -31,7 +31,7 @@ const createUser = (req, res) =>{
         });
       });
     })
-    .catch((err) => {
+    .catch(() => {
         return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
     });
    
@@ -50,7 +50,7 @@ const loginUser = (req, res) =>{
             // authentication successful! user is in the user variable
             const token = jwt.sign({_id: user._id}, JWT_SECRET, {expiresIn: "7d",});
 
-            res.send({token});
+            return res.send({token});
     })
     .catch((err) => {
       if (err.message === 'Incorrect email or password') {
