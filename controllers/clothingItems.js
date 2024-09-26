@@ -14,11 +14,6 @@ const createItem = (req, res) =>{
               .status(Error.ERRORS.INVALID_DATA)
               .send({ message: "Invalid data" });
         }
-        else if (e.name === "TypeError"){
-            res
-            .status(Error.ERRORS.INVALID_DATA)
-            .send({ message: "Invalid data" });
-        }
         else{
           res.status(Error.ERRORS.DEFAULT_ERROR).send({message: 'An error has occurred on the server'});
           console.log(e.name);
@@ -38,14 +33,12 @@ const getItems = (req, res) =>{
 const deleteItem = (req, res) =>{
   ClothingItem.findById(req.params.itemId)
   .then((item) => {
-    if (String(item.owner) !== req.user._id) {
-      console.log("I' here");
-      return res.status(Error.ERRORS.FORBIDDEN_ERROR).send({message: "Unauthorized item deletion"});
-    }
     if (!item) {
       return res.status(Error.ERRORS.NOT_FOUND).send({message: "Item Not Found"});
     }
-
+    if (String(item.owner) !== req.user._id) {
+      return res.status(Error.ERRORS.FORBIDDEN_ERROR).send({message: "Unauthorized item deletion"});
+    }
     return item
       .deleteOne()
       .then(() => res.send({ message: "Item deleted." }));

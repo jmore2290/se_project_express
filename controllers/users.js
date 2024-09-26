@@ -4,14 +4,6 @@ const Error = require("../utils/errors");
 const JWT_SECRET = require("../utils/config");
 const User = require("../models/user");
 
-const getUsers = (req, res) => {
-    User.find({})
-    .then((users) => res.send(users))
-    .catch((err) => {
-        console.error(err)
-        return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: err.message})
-    });
-} 
 
 const createUser = (req, res) =>{
     const {name, avatar, email, password} = req.body;
@@ -40,9 +32,6 @@ const createUser = (req, res) =>{
       });
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message})
-      } 
         return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"})
     });
    
@@ -52,6 +41,10 @@ const createUser = (req, res) =>{
 const loginUser = (req, res) =>{
     const {email, password} = req.body;
 
+    if(!email || !password) {
+      return res.status(Error.ERRORS.INVALID_DATA).send({message: "The email and passowrd fields are required"});
+    }
+
     User.findUserByCredentials(email, password)
     .then((user) => {
             // authentication successful! user is in the user variable
@@ -60,31 +53,14 @@ const loginUser = (req, res) =>{
             res.send({token});
     })
     .catch((err) => {
-            // authentication error
-      console.log(err.message);
-      res
-        .status(400)
-        .send({ message: err.message });
+      if (err.message === 'Incorrect email or password') {
+           return res.status(Error.ERRORS.UNAUTHORIZED).send({message: 'Authorization Required'})
+     }
+      
+      return res
+              .status(Error.ERRORS.DEFAULT_ERROR)
+              .send({ message: err.message });
     });
-
-   /*
-    User.findOne({email})
-    .then((user) =>{
-        if(!user){
-            return Promise.reject(new Error('Incorrect password or email'));
-        }
-        return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-        if (!matched) {
-          return Promise.reject(new Error('Incorrect email or password'));
-        }
-        res.send({ message: 'Everything good!' });
-      })
-    .catch((err) =>{
-        res.status(400).send({message: err.message});
-    });
-    */
 }
 
 const getCurrentUser = (req, res) =>{
@@ -111,6 +87,9 @@ const updateCurentUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
         console.error(err)
+        if(err.name === "ValidationError"){
+          return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message});
+        }
         if (err.name === "DocumentNotFoundError"){
             return res.status(Error.ERRORS.NOT_FOUND).send({message: err.message});
         } 
@@ -123,25 +102,5 @@ const updateCurentUser = (req, res) => {
     });
 }
 
-const getUser = (req, res) =>{
-   const {userId} = req.params;
 
-   User.findById(userId)
-   .orFail()
-   .then((user) => res.status(200).send(user))
-    .catch((err) => {
-        console.error(err)
-        if (err.name === "DocumentNotFoundError"){
-            return res.status(Error.ERRORS.NOT_FOUND).send({message: err.message});
-        } 
-        if (err.name === "CastError"){
-            return res.status(Error.ERRORS.INVALID_DATA).send({message: err.message});
-        }
-           
-      return res.status(Error.ERRORS.DEFAULT_ERROR).send({message: "An error has occurred on the server"});
-
-    });
-
-}
-
-module.exports = {getUsers, createUser, getUser, getCurrentUser, loginUser, updateCurentUser};
+module.exports = {createUser, getCurrentUser, loginUser, updateCurentUser};
