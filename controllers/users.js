@@ -31,6 +31,11 @@ const createUser = (req, res) => {
             .status(Error.ERRORS.DEFAULT_ERROR)
             .send({ message: "An error has occurred on the server" });
         });
+    })
+    .catch(() =>{
+        res
+           .status(Error.ERRORS.DEFAULT_ERROR)
+           .send({message: "An error has occured on the server"});
     });
   });
 };
@@ -55,12 +60,12 @@ const loginUser = (req, res) => {
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
-        res
-          .status(Error.ERRORS.UNAUTHORIZED)
-          .send({ message: "Authorization Required" });
+        return res
+               .status(Error.ERRORS.UNAUTHORIZED)
+               .send({ message: "Authorization Required" });
       }
 
-      res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
+      return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
     });
 };
 
