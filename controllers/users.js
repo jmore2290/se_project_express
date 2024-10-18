@@ -40,23 +40,24 @@ const createUser = (req, res) => {
   });
 };
 
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
   const { email, password } = req.body;
-
+  console.log(email);
+  console.log(password);
   if (!email || !password) {
     return res
       .status(Error.ERRORS.INVALID_DATA)
       .send({ message: "The email and passowrd fields are required" });
   }
 
-  return User.findUserByCredentials(email, password)
+   return User.findUserByCredentials(email, password)
     .then((user) => {
       // authentication successful! user is in the user variable
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-
-      res.send({ token });
+      console.log(user);
+      res.send({user});
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
@@ -67,6 +68,7 @@ const loginUser = (req, res) => {
 
       return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
     });
+    
 };
 
 const getCurrentUser = (req, res) => {
