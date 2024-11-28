@@ -3,15 +3,22 @@ const jwt = require("jsonwebtoken");
 const Error = require("../utils/errors");
 const JWT_SECRET = require("../utils/config");
 const User = require("../models/user");
+const BadRequestError = require("../errors/bad-request");
+const ConflictError = require("../errors/conflict");
+const ForbiddenError = require("../errors/forbidden");
+const UnauthorizedError = require("../errors/unauthorized");
+const NotFoundError = require("../errors/not-found");
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   User.findOne({ email }).then((userExists) => {
     if (userExists) {
-      return res
-        .status(Error.ERRORS.CONFLICT_ERROR)
-        .send({ message: "Email already exists in database" });
+      const error = new ConflictError("Email already exists in database");
+        return next(error);
+      //return res
+        //.status(Error.ERRORS.CONFLICT_ERROR)
+        //.send({ message: "Email already exists in database" });
     }
 
     return bcrypt.hash(password, 10).then((hash) => {
@@ -23,9 +30,11 @@ const createUser = (req, res) => {
         })
         .catch((err) => {
           if (err.name === "ValidationError") {
-            return res
-              .status(Error.ERRORS.INVALID_DATA)
-              .send({ message: err.message });
+            const error = new BadRequestError("The email and password fields are required");
+            return next(error);
+            //return res
+              //.status(Error.ERRORS.INVALID_DATA)
+              //.send({ message: err.message });
           }
           return res
             .status(Error.ERRORS.DEFAULT_ERROR)
@@ -40,14 +49,13 @@ const createUser = (req, res) => {
   });
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
   console.log(email);
   console.log(password);
   if (!email || !password) {
-    return res
-      .status(Error.ERRORS.INVALID_DATA)
-      .send({ message: "The email and passowrd fields are required" });
+    const error = new BadRequestError("The email and password fields are required");
+    return next(error);
   }
 
    return User.findUserByCredentials(email, password)
@@ -56,14 +64,15 @@ const loginUser = async (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      console.log(token);
       res.send({token, user});
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
-        return res
-               .status(Error.ERRORS.UNAUTHORIZED)
-               .send({ message: "Authorization Required" });
+        const error = new UnauthorizedError("Authorization Required");
+        return next(error);
+        //return res
+             //  .status(Error.ERRORS.UNAUTHORIZED)
+             ///  .send({ message: "Authorization Required" });
       }
 
       return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
@@ -79,9 +88,8 @@ const getCurrentUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(Error.ERRORS.NOT_FOUND)
-          .send({ message: "Document Not Found" });
+        const error = new NotFoundError("Authorization Required");
+        return next(error);
       }
       return res
         .status(Error.ERRORS.DEFAULT_ERROR)
@@ -91,7 +99,7 @@ const getCurrentUser = (req, res) => {
 
 const updateCurentUser = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body, {
-    new: true,
+    new: true, 
     runValidators: true,
   })
     .orFail()
@@ -99,19 +107,25 @@ const updateCurentUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res
-          .status(Error.ERRORS.INVALID_DATA)
-          .send({ message: err.message });
+        const error = new BadRequestError("The email and password fields are required");
+        return next(error);
+        //return res
+          //.status(Error.ERRORS.INVALID_DATA)
+          //.send({ message: err.message });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(Error.ERRORS.NOT_FOUND)
-          .send({ message: err.message });
+        const error = new NotFoundError("Authorization Required");
+        return next(error);
+        //return res
+          //.status(Error.ERRORS.NOT_FOUND)
+          //.send({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res
-          .status(Error.ERRORS.INVALID_DATA)
-          .send({ message: err.message });
+        const error = new BadRequestError(err.message);
+        return next(error);
+        //return res
+          //.status(Error.ERRORS.INVALID_DATA)
+          //.send({ message: err.message });
       }
 
       return res
