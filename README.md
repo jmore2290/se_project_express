@@ -10,5 +10,6 @@ The back-end project is focused on creating a server for the WTWR application. I
 -Project shows our mastery of the mongoose library and all related methods. 
 -This project was also an excellent introduction to the various linters available to developers (ESlinter being the one used here) 
 
-### Testing
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+### Link To Demo:
+Project Demo: https://www.blind.ohbah.com
+

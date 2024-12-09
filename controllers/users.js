@@ -9,9 +9,9 @@ const ForbiddenError = require("../errors/forbidden");
 const UnauthorizedError = require("../errors/unauthorized");
 const NotFoundError = require("../errors/not-found");
 
-const createUser = (req, res) => {
+const createUser = (req, res ) => {
   const { name, avatar, email, password } = req.body;
-
+  console.log("does this get called");
   User.findOne({ email }).then((userExists) => {
     if (userExists) {
       const error = new ConflictError("Email already exists in database");
@@ -24,6 +24,7 @@ const createUser = (req, res) => {
     return bcrypt.hash(password, 10).then((hash) => {
       User.create({ name, avatar, email, password: hash })
         .then((user) => {
+          console.log("here95");
           const userData = user.toObject();
           delete userData.password;
           return res.status(201).send({ user: userData });
@@ -31,17 +32,20 @@ const createUser = (req, res) => {
         .catch((err) => {
           if (err.name === "ValidationError") {
             const error = new BadRequestError("The email and password fields are required");
-            return next(error);
+            next(error);
+            //console.log("here09");
             //return res
               //.status(Error.ERRORS.INVALID_DATA)
               //.send({ message: err.message });
           }
+          console.log("here88");
           return res
             .status(Error.ERRORS.DEFAULT_ERROR)
             .send({ message: "An error has occurred on the server" });
         });
     })
     .catch(() =>{
+      console.log("here67");
         res
            .status(Error.ERRORS.DEFAULT_ERROR)
            .send({message: "An error has occured on the server"});
@@ -49,13 +53,18 @@ const createUser = (req, res) => {
   });
 };
 
+
+
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
   console.log(email);
   console.log(password);
   if (!email || !password) {
     const error = new BadRequestError("The email and password fields are required");
-    return next(error);
+    next(error);
+    //return res
+              //.status(Error.ERRORS.UNAUTHORIZED)
+               //.send({ message: "Authorization Required" });
   }
 
    return User.findUserByCredentials(email, password)
@@ -64,21 +73,24 @@ const loginUser = async (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
+      console.log(JWT_SECRET);
       res.send({token, user});
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
         const error = new UnauthorizedError("Authorization Required");
-        return next(error);
+         next(error);
         //return res
-             //  .status(Error.ERRORS.UNAUTHORIZED)
-             ///  .send({ message: "Authorization Required" });
+               //.status(Error.ERRORS.UNAUTHORIZED)
+               //.send({ message: "Authorization Required" });
       }
-
+      console.log(err.message);
       return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
     });
     
 };
+
+
 
 const getCurrentUser = (req, res) => {
   const id = req.user._id;
