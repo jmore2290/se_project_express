@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Error = require("../utils/errors");
-const JWT_SECRET = require("../utils/config");
+const { JWT_SECRET }= require("../utils/config");
 const User = require("../models/user");
 const BadRequestError = require("../errors/bad-request");
 const ConflictError = require("../errors/conflict");
@@ -16,9 +16,7 @@ const createUser = (req, res ) => {
     if (userExists) {
       const error = new ConflictError("Email already exists in database");
         return next(error);
-      //return res
-        //.status(Error.ERRORS.CONFLICT_ERROR)
-        //.send({ message: "Email already exists in database" });
+      
     }
 
     return bcrypt.hash(password, 10).then((hash) => {
@@ -33,10 +31,6 @@ const createUser = (req, res ) => {
           if (err.name === "ValidationError") {
             const error = new BadRequestError("The email and password fields are required");
             next(error);
-            //console.log("here09");
-            //return res
-              //.status(Error.ERRORS.INVALID_DATA)
-              //.send({ message: err.message });
           }
           console.log("here88");
           return res
@@ -62,9 +56,6 @@ const loginUser = async (req, res, next) => {
   if (!email || !password) {
     const error = new BadRequestError("The email and password fields are required");
     next(error);
-    //return res
-              //.status(Error.ERRORS.UNAUTHORIZED)
-               //.send({ message: "Authorization Required" });
   }
 
    return User.findUserByCredentials(email, password)
@@ -80,9 +71,6 @@ const loginUser = async (req, res, next) => {
       if (err.message === "Incorrect email or password") {
         const error = new UnauthorizedError("Authorization Required");
          next(error);
-        //return res
-               //.status(Error.ERRORS.UNAUTHORIZED)
-               //.send({ message: "Authorization Required" });
       }
       console.log(err.message);
       return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
@@ -121,23 +109,14 @@ const updateCurentUser = (req, res) => {
       if (err.name === "ValidationError") {
         const error = new BadRequestError("The email and password fields are required");
         return next(error);
-        //return res
-          //.status(Error.ERRORS.INVALID_DATA)
-          //.send({ message: err.message });
       }
       if (err.name === "DocumentNotFoundError") {
         const error = new NotFoundError("Authorization Required");
         return next(error);
-        //return res
-          //.status(Error.ERRORS.NOT_FOUND)
-          //.send({ message: err.message });
       }
       if (err.name === "CastError") {
         const error = new BadRequestError(err.message);
         return next(error);
-        //return res
-          //.status(Error.ERRORS.INVALID_DATA)
-          //.send({ message: err.message });
       }
 
       return res
