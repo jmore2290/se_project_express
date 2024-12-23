@@ -9,7 +9,7 @@ const ForbiddenError = require("../errors/forbidden");
 const UnauthorizedError = require("../errors/unauthorized");
 const NotFoundError = require("../errors/not-found");
 
-const createUser = (req, res ) => {
+const createUser = (req, res, next ) => {
   const { name, avatar, email, password } = req.body;
   console.log("does this get called");
   User.findOne({ email }).then((userExists) => {
@@ -80,7 +80,7 @@ const loginUser = async (req, res, next) => {
 
 
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const id = req.user._id;
   console.log(id);
   User.findById(id)
@@ -97,7 +97,7 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-const updateCurentUser = (req, res) => {
+const updateCurentUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, {
     new: true, 
     runValidators: true,
