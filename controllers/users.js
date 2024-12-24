@@ -33,16 +33,18 @@ const createUser = (req, res, next ) => {
             next(error);
           }
           console.log("here88");
-          return res
-            .status(Error.ERRORS.DEFAULT_ERROR)
-            .send({ message: "An error has occurred on the server" });
+          next(err);
+          //return res
+            //.status(Error.ERRORS.DEFAULT_ERROR)
+            //.send({ message: "An error has occurred on the server" });
         });
     })
-    .catch(() =>{
+    .catch((err) =>{
       console.log("here67");
-        res
-           .status(Error.ERRORS.DEFAULT_ERROR)
-           .send({message: "An error has occured on the server"});
+      next(err);
+        //res
+          // .status(Error.ERRORS.DEFAULT_ERROR)
+           //.send({message: "An error has occured on the server"});
     });
   });
 };
@@ -73,7 +75,8 @@ const loginUser = async (req, res, next) => {
          next(error);
       }
       console.log(err.message);
-      return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
+      //return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
+      next(err);
     });
     
 };
@@ -91,9 +94,10 @@ const getCurrentUser = (req, res, next) => {
         const error = new NotFoundError("Authorization Required");
         return next(error);
       }
-      return res
-        .status(Error.ERRORS.DEFAULT_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      next(err);
+      //return res
+        //.status(Error.ERRORS.DEFAULT_ERROR)
+        //.send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -118,10 +122,10 @@ const updateCurentUser = (req, res, next) => {
         const error = new BadRequestError(err.message);
         return next(error);
       }
-
-      return res
-        .status(Error.ERRORS.DEFAULT_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      next(err);
+      //return res
+        //.status(Error.ERRORS.DEFAULT_ERROR)
+        //.send({ message: "An error has occurred on the server" });
     });
 };
 
