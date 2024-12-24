@@ -34,17 +34,11 @@ const createUser = (req, res, next ) => {
           }
           console.log("here88");
           next(err);
-          //return res
-            //.status(Error.ERRORS.DEFAULT_ERROR)
-            //.send({ message: "An error has occurred on the server" });
         });
     })
     .catch((err) =>{
       console.log("here67");
       next(err);
-        //res
-          // .status(Error.ERRORS.DEFAULT_ERROR)
-           //.send({message: "An error has occured on the server"});
     });
   });
 };
@@ -75,7 +69,6 @@ const loginUser = async (req, res, next) => {
          next(error);
       }
       console.log(err.message);
-      //return res.status(Error.ERRORS.DEFAULT_ERROR).send({ message: err.message });
       next(err);
     });
     
@@ -95,9 +88,6 @@ const getCurrentUser = (req, res, next) => {
         return next(error);
       }
       next(err);
-      //return res
-        //.status(Error.ERRORS.DEFAULT_ERROR)
-        //.send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -123,9 +113,6 @@ const updateCurentUser = (req, res, next) => {
         return next(error);
       }
       next(err);
-      //return res
-        //.status(Error.ERRORS.DEFAULT_ERROR)
-        //.send({ message: "An error has occurred on the server" });
     });
 };
 

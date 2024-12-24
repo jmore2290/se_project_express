@@ -17,9 +17,6 @@ const createItem = (req, res, next) => {
         const error = new BadRequestError("The email and password fields are required");
          next(error);
       } else {
-        //res
-          //.status(Error.ERRORS.DEFAULT_ERROR)
-          //.send({ message: "An error has occurred on the server" });
         console.log(e.name);
         next(e);
       }
@@ -32,9 +29,6 @@ const getItems = (req, res, next) => {
       res.status(200).send(items);
     })
     .catch((err) => {
-      //res
-       // .status(Error.ERRORS.DEFAULT_ERROR)
-        //.send({ message: "An error has occurred on the server" });
         next(err);
     });
 };
@@ -45,16 +39,10 @@ const deleteItem = (req, res, next) => {
       if (!item) {
         const error = new NotFoundError("Item Not Found");
          next(error);
-        //return res
-          //.status(Error.ERRORS.NOT_FOUND)
-          //.send({ message: "Item Not Found" });
       }
       if (String(item.owner) !== req.user._id) {
         const error = new ForbiddenError("Unauthorized Item deletion");
         next(error);
-        //return res
-          //.status(Error.ERRORS.FORBIDDEN_ERROR)
-          //.send({ message: "Unauthorized item deletion" });
       }
       return item
         .deleteOne()
@@ -64,14 +52,8 @@ const deleteItem = (req, res, next) => {
       if (e.name === "CastError") {
         const error = new BadRequestError("Invalid Data");
          next(error);
-        //return res
-          //.status(Error.ERRORS.INVALID_DATA)
-          //.send({ message: "Invalid data" });
       }
       next(e);
-      //return res
-        //.status(Error.ERRORS.DEFAULT_ERROR)
-        //.send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -89,21 +71,12 @@ const likeItem = (req, res, next) => {
       if (e.name === "DocumentNotFoundError") {
         const error = new NotFoundError("Document Not Found");
          next(error);
-        //return res
-          //.status(Error.ERRORS.NOT_FOUND)
-          //.send({ message: "Document not found" });
       }
       if (e.name === "CastError") {
         const error = new BadRequestError("Invalid Data");
          next(error);
-        //return res
-          //.status(Error.ERRORS.INVALID_DATA)
-          //.send({ message: "Invalid data" });
       }
        next(e);
-      //return res
-        //.status(Error.ERRORS.DEFAULT_ERROR)
-        //.send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -121,21 +94,12 @@ const dislikeItem = (req, res, next) => {
       if (e.name === "DocumentNotFoundError") {
         const error = new NotFoundError("Document Not Found");
          next(error);
-        //return res
-          //.status(Error.ERRORS.NOT_FOUND)
-          //.send({ message: "Document not found" });
       }
       if (e.name === "CastError") {
         const error = new BadRequestError("Invalid Data");
          next(error);
-        //return res
-          //.status(Error.ERRORS.INVALID_DATA)
-          //.send({ message: "Invalid data" });
       }
       next(e);
-      //return res
-        //.status(Error.ERRORS.DEFAULT_ERROR)
-        //.send({ message: "An error has occurred on the server" });
     });
 };
 
