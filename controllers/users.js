@@ -1,17 +1,14 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Error = require("../utils/errors");
 const { JWT_SECRET }= require("../utils/config");
 const User = require("../models/user");
 const BadRequestError = require("../errors/bad-request");
 const ConflictError = require("../errors/conflict");
-const ForbiddenError = require("../errors/forbidden");
 const UnauthorizedError = require("../errors/unauthorized");
 const NotFoundError = require("../errors/not-found");
 
 const createUser = (req, res, next ) => {
   const { name, avatar, email, password } = req.body;
-  console.log("does this get called");
   User.findOne({ email }).then((userExists) => {
     if (userExists) {
       const error = new ConflictError("Email already exists in database");
@@ -30,10 +27,10 @@ const createUser = (req, res, next ) => {
         .catch((err) => {
           if (err.name === "ValidationError") {
             const error = new BadRequestError("The email and password fields are required");
-            next(error);
+            return next(error);
           }
           console.log("here88");
-          next(err);
+          return next(err);
         });
     })
     .catch((err) =>{
@@ -51,25 +48,25 @@ const loginUser = async (req, res, next) => {
   console.log(password);
   if (!email || !password) {
     const error = new BadRequestError("The email and password fields are required");
-    next(error);
+    return next(error);
   }
 
    return User.findUserByCredentials(email, password)
     .then((user) => {
-      // authentication successful! user is in the user variable
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
       console.log(JWT_SECRET);
-      res.send({token, user});
+      //res.send({token, user});
+      res.send({token});
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
         const error = new UnauthorizedError("Authorization Required");
-         next(error);
+         return next(error);
       }
       console.log(err.message);
-      next(err);
+      return next(err);
     });
     
 };
@@ -87,7 +84,7 @@ const getCurrentUser = (req, res, next) => {
         const error = new NotFoundError("Authorization Required");
         return next(error);
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -112,7 +109,7 @@ const updateCurentUser = (req, res, next) => {
         const error = new BadRequestError(err.message);
         return next(error);
       }
-      next(err);
+      return next(err);
     });
 };
 

@@ -1,8 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
-const Error = require("../utils/errors");
 const BadRequestError = require("../errors/bad-request");
 const NotFoundError = require("../errors/not-found");
-const UnauthorizedError = require("../errors/unauthorized");
 const ForbiddenError = require("../errors/forbidden");
 
 const createItem = (req, res, next) => {
@@ -15,11 +13,11 @@ const createItem = (req, res, next) => {
     .catch((e) => {
       if (e.name === "ValidationError") {
         const error = new BadRequestError("The email and password fields are required");
-         next(error);
-      } else {
-        console.log(e.name);
-        next(e);
-      }
+         return next(error);
+      } 
+      console.log(e.name);
+      return next(e);
+      
     });
 };
 
@@ -38,11 +36,11 @@ const deleteItem = (req, res, next) => {
     .then((item) => {
       if (!item) {
         const error = new NotFoundError("Item Not Found");
-         next(error);
+         return next(error);
       }
       if (String(item.owner) !== req.user._id) {
         const error = new ForbiddenError("Unauthorized Item deletion");
-        next(error);
+        return next(error);
       }
       return item
         .deleteOne()
@@ -51,9 +49,9 @@ const deleteItem = (req, res, next) => {
     .catch((e) => {
       if (e.name === "CastError") {
         const error = new BadRequestError("Invalid Data");
-         next(error);
+         return next(error);
       }
-      next(e);
+      return next(e);
     });
 };
 
@@ -70,13 +68,13 @@ const likeItem = (req, res, next) => {
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
         const error = new NotFoundError("Document Not Found");
-         next(error);
+        return next(error);
       }
       if (e.name === "CastError") {
         const error = new BadRequestError("Invalid Data");
-         next(error);
+         return next(error);
       }
-       next(e);
+       return next(e);
     });
 };
 
@@ -93,13 +91,13 @@ const dislikeItem = (req, res, next) => {
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
         const error = new NotFoundError("Document Not Found");
-         next(error);
+         return next(error);
       }
       if (e.name === "CastError") {
         const error = new BadRequestError("Invalid Data");
-         next(error);
+         return next(error);
       }
-      next(e);
+      return next(e);
     });
 };
 
