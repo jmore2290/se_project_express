@@ -19,7 +19,6 @@ const createUser = (req, res, next ) => {
     return bcrypt.hash(password, 10).then((hash) => {
       User.create({ name, avatar, email, password: hash })
         .then((user) => {
-          console.log("here95");
           const userData = user.toObject();
           delete userData.password;
           return res.status(201).send({ user: userData });
@@ -29,12 +28,10 @@ const createUser = (req, res, next ) => {
             const error = new BadRequestError("The email and password fields are required");
             return next(error);
           }
-          console.log("here88");
           return next(err);
         });
     })
     .catch((err) =>{
-      console.log("here67");
       next(err);
     });
   });
@@ -44,8 +41,6 @@ const createUser = (req, res, next ) => {
 
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(email);
-  console.log(password);
   if (!email || !password) {
     const error = new BadRequestError("The email and password fields are required");
     return next(error);
@@ -56,8 +51,6 @@ const loginUser = async (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      console.log(JWT_SECRET);
-      //res.send({token, user});
       res.send({token});
     })
     .catch((err) => {
@@ -65,7 +58,6 @@ const loginUser = async (req, res, next) => {
         const error = new UnauthorizedError("Authorization Required");
          return next(error);
       }
-      console.log(err.message);
       return next(err);
     });
     

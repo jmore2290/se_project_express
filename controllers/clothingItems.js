@@ -5,7 +5,6 @@ const ForbiddenError = require("../errors/forbidden");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
-  console.log(req.user._id);
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       res.status(200).send({ data: item });
@@ -15,7 +14,6 @@ const createItem = (req, res, next) => {
         const error = new BadRequestError("The email and password fields are required");
          return next(error);
       } 
-      console.log(e.name);
       return next(e);
       
     });
